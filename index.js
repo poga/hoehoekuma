@@ -1,10 +1,10 @@
 function create_bear(x, y) {
-    var anim = new jaws.Animation({sprite_sheet: "sprites/char1_sprites.png", frame_duration: 100, frame_size: [24, 32]});
+    var anim = new jaws.Animation({sprite_sheet: "sprites/char1_sprites.png", frame_duration: 300, frame_size: [24, 32]});
     bear = new jaws.Sprite({x:x, y:y, scale: 3, anchor: "center" });
-    bear.anim_up = anim.slice(3, 5);
-    bear.anim_down = anim.slice(0, 2);
-    bear.anim_left = anim.slice(9, 11);
-    bear.anim_right = anim.slice(6,8);
+    bear.anim_up = anim.slice(5, 9);
+    bear.anim_down = anim.slice(0, 4);
+    bear.anim_left = anim.slice(15, 19);
+    bear.anim_right = anim.slice(10,14);
 
     bear.setImage( bear.anim_down.next());
 
