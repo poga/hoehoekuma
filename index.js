@@ -13,10 +13,12 @@ function create_bear(x, y) {
 
 function Game() {
     var bear;
+    var map;
     var auto_bears = [];
     var speed = 2;
 
     this.setup = function () {
+        map = new jaws.Sprite({ x:320, y:240, anchor: "center", image: "map.png"});
         bear = create_bear(320, 240);
         for (var i=0; i<10; i++) {
             auto_bears.push(create_bear(Math.random()*500+100, Math.random()*300+100));
@@ -46,6 +48,7 @@ function Game() {
     };
     this.draw = function () {
         jaws.clear();
+        map.draw();
         bear.draw();
         auto_bears.forEach(function(b) {b.draw();});
     };
@@ -53,6 +56,7 @@ function Game() {
 
 jaws.onload = function() {
   jaws.assets.add("sprites/char1_sprites.png");
+  jaws.assets.add("map.png");
   jaws.start(Game);  // Our convenience function jaws.start() will load assets, call setup and loop update/draw in 60 FPS
 };
 
