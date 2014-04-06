@@ -17,6 +17,34 @@ function draw_rect(canvas, x, y, width, height, fillStyle) {
     ctx.fillRect(x, y, width, height);
 }
 
+function draw_roundrect(canvas, x, y, width, height, radius, fillStyle) {
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = fillStyle;
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.fill();
+}
+
+function draw_dialog(canvas, x, y, width, height, fillStyle) {
+    draw_roundrect(canvas, x, y, width, height, 10, fillStyle);
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = fillStyle;
+    ctx.beginPath();
+    ctx.moveTo(x + width - 10, y + height);
+    ctx.lineTo(x + width - 25, y + height + 10);
+    ctx.lineTo(x + width - 20, y + height);
+    ctx.lineTo(x + width - 10, y + height - 10);
+    ctx.fill();
+}
+
 function draw_text(canvas, x, y, text, fillStyle) {
     var ctx = canvas.getContext('2d');
     ctx.fillStyle = fillStyle;
@@ -116,8 +144,9 @@ function Game() {
         bear.draw();
         auto_bears.forEach(function(b) {
             b.draw();
-            draw_rect(jaws.canvas, b.x-50, b.y-65, 100, 30, "rgb(192,192,192)");
-            draw_text(jaws.canvas, b.x-40, b.y-45, window.bear_text[b.text_n], "rgb(0,0,0)");
+            //draw_rect(jaws.canvas, b.x-50, b.y-65, 100, 30, "rgb(192,192,192)");
+            draw_dialog(jaws.canvas, b.x-50, b.y-65, 100, 30, "#fff");
+            draw_text(jaws.canvas, b.x-40, b.y-43, window.bear_text[b.text_n], "rgb(0,0,0)");
         });
     };
 }
