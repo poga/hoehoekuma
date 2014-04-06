@@ -1,5 +1,14 @@
-function create_bear(x, y) {
-    var anim = new jaws.Animation({sprite_sheet: "sprites/char1_sprites.png", frame_duration: 200, frame_size: [24, 32]});
+function uint_random(n) {
+  return Math.floor(Math.random()*n);
+}
+
+var SHEET_NUM = 0;
+
+function create_bear(type_n, x, y) {
+
+    var sheetname = 'sprites/char' + (type_n) + '_sprites.png';
+
+    var anim = new jaws.Animation({sprite_sheet: sheetname, frame_duration: 200, frame_size: [24, 32]});
     bear = new jaws.Sprite({x:x, y:y, scale: 3, anchor: "center" });
     bear.anim_up = anim.slice(8, 12);
     bear.anim_down = anim.slice(0, 4);
@@ -19,9 +28,9 @@ function Game() {
 
     this.setup = function () {
         map = new jaws.Sprite({ x:320, y:240, anchor: "center", image: "map.png"});
-        bear = create_bear(320, 240);
+        bear = create_bear(1, 320, 240);
         for (var i=0; i<10; i++) {
-            auto_bears.push(create_bear(Math.random()*500+100, Math.random()*300+100));
+            auto_bears.push(create_bear(uint_random(SHEET_NUM-1)+2, Math.random()*500+100, Math.random()*300+100));
         }
         jaws.preventDefaultKeys(["up", "down", "left", "right"]);
     };
@@ -54,17 +63,29 @@ function Game() {
     };
 }
 
-jaws.onload = function() {
+function when_load_fail_we_start_game() {
+  jaws.assets.add("map.png");
+  jaws.start(Game);  // Our convenience function jaws.start() will load assets, call setup and loop update/draw in 60 FPS
+}
 
+function load_asset_sequencially_until_fail(i) {
+  var fname = 'sprites/char' + i + '_sprites.png';
   var oReq = new XMLHttpRequest();
-  oReq.open('GET', 'sprites/char1_sprites.png', true );        
+  oReq.open('GET', fname, true );        
   oReq.responseType = "blob";
   oReq.onload = function ( oEvent ) {
-    jaws.assets.add("sprites/char1_sprites.png");
-    jaws.assets.add("map.png");
-    jaws.start(Game);  // Our convenience function jaws.start() will load assets, call setup and loop update/draw in 60 FPS
+    if ( oReq.status === 200 ) {
+      SHEET_NUM += 1;
+      jaws.assets.add(fname);
+      load_asset_sequencially_until_fail( i+1 );
+    } else {
+      when_load_fail_we_start_game();
+    }
   };
   oReq.send(null);
+}
 
+jaws.onload = function() {
+  load_asset_sequencially_until_fail(1);
 };
 
