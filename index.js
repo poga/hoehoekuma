@@ -3,6 +3,14 @@ function uint_random(n) {
   return Math.floor(Math.random()*n);
 }
 
+function size_of_dict(t) {
+  var size = 0, key;
+  for(key in t) {
+    if(t.hasOwnProperty(key)) ++size;
+  }
+  return size;
+}
+
 function draw_rect(canvas, x, y, width, height, fillStyle) {
     var ctx = canvas.getContext('2d');
     ctx.fillStyle = fillStyle;
@@ -30,6 +38,7 @@ function create_bear(type_n, x, y) {
     bear.anim_left = anim.slice(12, 16);
     bear.anim_right = anim.slice(4, 8);
     bear.type_n = type_n;
+    bear.text_n = uint_random( size_of_dict(bear_text) ) + 1;
 
     bear.setImage( bear.anim_down.next());
     
@@ -108,7 +117,7 @@ function Game() {
         auto_bears.forEach(function(b) {
             b.draw();
             draw_rect(jaws.canvas, b.x-50, b.y-65, 100, 30, "rgb(192,192,192)");
-            draw_text(jaws.canvas, b.x-40, b.y-45, window.bear_text[b.type_n], "rgb(0,0,0)");
+            draw_text(jaws.canvas, b.x-40, b.y-45, window.bear_text[b.text_n], "rgb(0,0,0)");
         });
     };
 }
@@ -138,5 +147,6 @@ function load_asset_sequencially_until_fail(i) {
 jaws.onload = function() {
   load_asset_sequencially_until_fail(1);
   console.log(window.bear_text);
+  
 };
 
