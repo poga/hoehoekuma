@@ -57,7 +57,6 @@ function Game() {
 
     this.update = function () {
         bear.setImage( bear.anim_down.next());
-        auto_bears.forEach(function(b) {b.setImage(b.anim_down.next());});
         if(jaws.pressed("left")) {
             bear.x -= speed;
             bear.setImage( bear.anim_left.next());
@@ -84,6 +83,21 @@ function Game() {
           }
           if( b.y < 0 || b.y > jaws.height ) {
             b.vy *= -1;
+          }
+          
+          // change character facing after speed change:
+          var arc = Math.atan2( - b.vy, b.vx );
+          if( arc > -3/4 * Math.PI && arc <= -1/4 * Math.PI ) {
+            b.setImage(b.anim_down.next());
+          }
+          else if( arc > -1/4 * Math.PI && arc <= 1/4 * Math.PI ) {
+            b.setImage(b.anim_right.next());
+          }
+          else if( arc > 1/4 * Math.PI && arc <= 3/4 * Math.PI ) {
+            b.setImage(b.anim_up.next());
+          }
+          else {
+            b.setImage(b.anim_left.next()); 
           }
         });
     };
