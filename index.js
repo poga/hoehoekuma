@@ -85,7 +85,7 @@ function Game() {
         auto_bears.forEach(function(b) {
             b.draw();
             draw_rect(jaws.canvas, b.x-50, b.y-65, 100, 30, "rgb(230,230,230)");
-            draw_text(jaws.canvas, b.x-40, b.y-45, window.bear_text[bear.type_n], "rgb(0,0,0)");
+            draw_text(jaws.canvas, b.x-40, b.y-45, window.bear_text[b.type_n], "rgb(0,0,0)");
         });
     };
 }
