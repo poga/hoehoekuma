@@ -76,7 +76,7 @@ function Game() {
         }
         
         // Auto-bears movements
-        for
+        
     };
     this.draw = function () {
         jaws.clear();
