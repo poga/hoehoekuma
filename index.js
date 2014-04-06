@@ -1,5 +1,19 @@
+$.getJSON("./text.json", function (data) { window.bear_text = data; });
 function uint_random(n) {
   return Math.floor(Math.random()*n);
+}
+
+function draw_rect(canvas, x, y, width, height, fillStyle) {
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = fillStyle;
+    ctx.fillRect(x, y, width, height);
+}
+
+function draw_text(canvas, x, y, text, fillStyle) {
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = fillStyle;
+    ctx.font = "20px Verdana";
+    ctx.fillText(text, x, y);
 }
 
 var SHEET_NUM = 0;
@@ -15,6 +29,7 @@ function create_bear(type_n, x, y) {
     bear.anim_down = anim.slice(0, 4);
     bear.anim_left = anim.slice(12, 16);
     bear.anim_right = anim.slice(4, 8);
+    bear.type_n = type_n;
 
     bear.setImage( bear.anim_down.next());
     
@@ -67,7 +82,11 @@ function Game() {
         jaws.clear();
         map.draw();
         bear.draw();
-        auto_bears.forEach(function(b) {b.draw();});
+        auto_bears.forEach(function(b) {
+            b.draw();
+            draw_rect(jaws.canvas, b.x-50, b.y-65, 100, 30, "rgb(230,230,230)");
+            draw_text(jaws.canvas, b.x-40, b.y-45, window.bear_text[bear.type_n], "rgb(0,0,0)");
+        });
     };
 }
 
@@ -95,5 +114,6 @@ function load_asset_sequencially_until_fail(i) {
 
 jaws.onload = function() {
   load_asset_sequencially_until_fail(1);
+  console.log(window.bear_text);
 };
 
