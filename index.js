@@ -3,6 +3,7 @@ function uint_random(n) {
 }
 
 var SHEET_NUM = 0;
+var AUTO_BEAR_NUM = 10;
 
 function create_bear(type_n, x, y) {
 
@@ -16,6 +17,10 @@ function create_bear(type_n, x, y) {
     bear.anim_right = anim.slice(4, 8);
 
     bear.setImage( bear.anim_down.next());
+    
+    // vx / vy only used by auto_bears
+    bear.vx = Math.random()*4 - 2;
+    bear.vy = Math.random()*4 - 2;
 
     return bear;
 }
@@ -29,7 +34,7 @@ function Game() {
     this.setup = function () {
         map = new jaws.Sprite({ x:320, y:240, anchor: "center", image: "map.png"});
         bear = create_bear(1, 320, 240);
-        for (var i=0; i<10; i++) {
+        for (var i=0; i < AUTO_BEAR_NUM; i++) {
             auto_bears.push(create_bear(uint_random(SHEET_NUM-1)+2, Math.random()*500+100, Math.random()*300+100));
         }
         jaws.preventDefaultKeys(["up", "down", "left", "right"]);
@@ -54,6 +59,9 @@ function Game() {
             bear.y += speed;
             bear.setImage( bear.anim_down.next());
         }
+        
+        // Auto-bears movements
+        for
     };
     this.draw = function () {
         jaws.clear();
