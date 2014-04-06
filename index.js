@@ -1,10 +1,10 @@
 function create_bear(x, y) {
-    var anim = new jaws.Animation({sprite_sheet: "sprites/char1_sprites.png", frame_duration: 300, frame_size: [24, 32]});
+    var anim = new jaws.Animation({sprite_sheet: "sprites/char1_sprites.png", frame_duration: 200, frame_size: [24, 32]});
     bear = new jaws.Sprite({x:x, y:y, scale: 3, anchor: "center" });
-    bear.anim_up = anim.slice(5, 9);
+    bear.anim_up = anim.slice(8, 12);
     bear.anim_down = anim.slice(0, 4);
-    bear.anim_left = anim.slice(15, 19);
-    bear.anim_right = anim.slice(10,14);
+    bear.anim_left = anim.slice(12, 16);
+    bear.anim_right = anim.slice(4, 8);
 
     bear.setImage( bear.anim_down.next());
 
@@ -55,8 +55,16 @@ function Game() {
 }
 
 jaws.onload = function() {
-  jaws.assets.add("sprites/char1_sprites.png");
-  jaws.assets.add("map.png");
-  jaws.start(Game);  // Our convenience function jaws.start() will load assets, call setup and loop update/draw in 60 FPS
+
+  var oReq = new XMLHttpRequest();
+  oReq.open('GET', 'sprites/char1_sprites.png', true );        
+  oReq.responseType = "blob";
+  oReq.onload = function ( oEvent ) {
+    jaws.assets.add("sprites/char1_sprites.png");
+    jaws.assets.add("map.png");
+    jaws.start(Game);  // Our convenience function jaws.start() will load assets, call setup and loop update/draw in 60 FPS
+  };
+  oReq.send(null);
+
 };
 
