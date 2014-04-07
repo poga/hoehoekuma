@@ -6,7 +6,13 @@ var SHEET_NUM = 0;
 var AUTO_BEAR_NUM = 10;
 var SCALE = 1; // scale factor to the image assets
 
-//
+// --------------- Math and Helpers ----------
+
+function len_sq(obj1, obj2) {
+  var dx = (obj2.x - obj1.x)
+  var dy = (obj2.y - obj1.y)  
+  return (dx * dx) + (dy * dy);
+}
 
 function uint_random(n) {
   return ~~(Math.random()*n);
@@ -61,6 +67,8 @@ function draw_text(canvas, x, y, text, fillStyle) {
     ctx.fillText(text, x, y);
 }
 
+// ------------ Bear Behaviours, not yet fully refactored -----------------
+
 function bear_say(text) {
   var that = this;
   if (that.text_n) return;
@@ -69,6 +77,63 @@ function bear_say(text) {
     that.text_n = null;
   }, 1000);
 }
+
+function auto_bear_following(bear) {
+
+  // approaching hero bear's position by a fraction each frame
+  this.x += (bear.x - this.x) / 5; 
+  this.y += (bear.y - this.y) / 5;
+  
+  // when auto_bear follows hero bear, make them facing the same direction
+  if(jaws.pressed("left")) {       
+      this.setImage( this.anim_left.next() );
+  }
+  if(jaws.pressed("right")){
+      this.setImage( this.anim_right.next() );
+  }
+  if(jaws.pressed("up")){
+      this.setImage( this.anim_up.next() );
+  }
+  if(jaws.pressed("down")){
+      this.setImage( this.anim_down.next() );
+  }
+}
+
+function auto_bear_roaming(bear) {
+  this.x += this.vx;
+  this.y += this.vy;
+  if( this.x < 0 || this.x > jaws.width ) {
+    this.vx *= -1;
+  }
+  if( this.y < 100 || this.y > jaws.height ) {
+    this.vy *= -1;
+  }
+  
+  // change character facing after speed change:
+  var arc = Math.atan2( - this.vy, this.vx );
+  if( arc > -3/4 * Math.PI && arc <= -1/4 * Math.PI ) {
+    this.setImage(this.anim_down.next());
+  }
+  else if( arc > -1/4 * Math.PI && arc <= 1/4 * Math.PI ) {
+    this.setImage(this.anim_right.next());
+  }
+  else if( arc > 1/4 * Math.PI && arc <= 3/4 * Math.PI ) {
+    this.setImage(this.anim_up.next());
+  }
+  else {
+    this.setImage(this.anim_left.next()); 
+  }
+  
+  // This is just a hack here. in the actual game, auto_bears should only follow hero bear
+  // when he is "shouted to death" so he follows the hero.
+  // But for the demonstration of following quickly, let's just check proximity and 
+  // changes auto_bear's behaviour
+  if( len_sq(this, bear) < 400 ) {
+    this.movement = auto_bear_following;
+  }
+}
+
+// ----------------- Constructors ----------------
 
 function create_bear(type_n, x, y) {
 
@@ -89,6 +154,7 @@ function create_bear(type_n, x, y) {
     // vx / vy only used by auto_bears
     bear.vx = Math.random()*2 - 1;
     bear.vy = Math.random()*2 - 1;
+    bear.movement = auto_bear_roaming;
 
     return bear;
 }
@@ -101,6 +167,8 @@ function create_cooking_bear(x, y) {
   
   return cooking;
 }
+
+// -------------------------- Game --------------------------
 
 function Game() {
     var bear;
@@ -144,31 +212,8 @@ function Game() {
             bear.setImage( bear.anim_down.next());
         }
         
-        // Auto-bears movements
         auto_bears.forEach(function(b) {
-          b.x += b.vx;
-          b.y += b.vy;
-          if( b.x < 0 || b.x > jaws.width ) {
-            b.vx *= -1;
-          }
-          if( b.y < 100 || b.y > jaws.height ) {
-            b.vy *= -1;
-          }
-          
-          // change character facing after speed change:
-          var arc = Math.atan2( - b.vy, b.vx );
-          if( arc > -3/4 * Math.PI && arc <= -1/4 * Math.PI ) {
-            b.setImage(b.anim_down.next());
-          }
-          else if( arc > -1/4 * Math.PI && arc <= 1/4 * Math.PI ) {
-            b.setImage(b.anim_right.next());
-          }
-          else if( arc > 1/4 * Math.PI && arc <= 3/4 * Math.PI ) {
-            b.setImage(b.anim_up.next());
-          }
-          else {
-            b.setImage(b.anim_left.next()); 
-          }
+          b.movement(bear);
         });
     };
     this.draw = function () {
@@ -190,6 +235,8 @@ function Game() {
         });
     };
 }
+
+// --------------------- Everything else ------------------------
 
 function when_load_fail_we_start_game() {
   // remember to add new assets here 
