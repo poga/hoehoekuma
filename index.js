@@ -1,4 +1,13 @@
 $.getJSON("./text.json", function (data) { window.bear_text = data; });
+
+// --------------- CONSTANT ------------------
+
+var SHEET_NUM = 0;
+var AUTO_BEAR_NUM = 10;
+var SCALE = 2; // scale factor to the image assets
+
+//
+
 function uint_random(n) {
   return ~~(Math.random()*n);
 }
@@ -52,9 +61,6 @@ function draw_text(canvas, x, y, text, fillStyle) {
     ctx.fillText(text, x, y);
 }
 
-var SHEET_NUM = 0;
-var AUTO_BEAR_NUM = 10;
-
 function bear_say(text) {
   var that = this;
   if (that.text_n) return;
@@ -69,7 +75,7 @@ function create_bear(type_n, x, y) {
     var sheetname = 'sprites/char' + (type_n) + '_sprites.png';
 
     var anim = new jaws.Animation({sprite_sheet: sheetname, frame_duration: 200, frame_size: [24, 32]});
-    bear = new jaws.Sprite({x:x, y:y, scale: 2, anchor: "center" });
+    var bear = new jaws.Sprite({x:x, y:y, scale: SCALE, anchor: "center" });
     bear.anim_up = anim.slice(8, 12);
     bear.anim_down = anim.slice(0, 4);
     bear.anim_left = anim.slice(12, 16);
@@ -87,14 +93,29 @@ function create_bear(type_n, x, y) {
     return bear;
 }
 
+function create_cooking_bear(x, y) {
+  var anim = new jaws.Animation({sprite_sheet: 'cooking.png', frame_duration: 400, frame_size: [53, 53]});
+  var cooking = new jaws.Sprite( {x:x, y:y, scale: SCALE, anchor: "center" } );
+  cooking.anim = anim;
+  cooking.setImage( cooking.anim.next() );
+  
+  return cooking;
+}
+
 function Game() {
     var bear;
     var map;
+    var base; 
     var auto_bears = [];
+    var cooking_bear;
     var speed = 2;
 
     this.setup = function () {
+        cooking_bear = create_cooking_bear( jaws.width/2, 50 );
+        base = new jaws.Sprite( {x:jaws.width/2, y:100, anchor: "center", image: "base.png"} );
+        
         map = new jaws.Sprite({ x:jaws.width/2, y:jaws.height/2, anchor: "center", image: "map.png"});
+        
         bear = create_bear(1, jaws.width/2, jaws.height/2);
         for (var i=0; i < AUTO_BEAR_NUM; i++) {
             auto_bears.push(create_bear(uint_random(SHEET_NUM-1)+2, Math.random()*jaws.width, Math.random()*jaws.height));
@@ -103,6 +124,8 @@ function Game() {
     };
 
     this.update = function () {
+        cooking_bear.setImage( cooking_bear.anim.next() );
+    
         bear.setImage( bear.anim_down.next());
         if(jaws.pressed("left")) {
             bear.x -= speed;
@@ -151,6 +174,8 @@ function Game() {
     this.draw = function () {
         jaws.clear();
         map.draw();
+        base.draw();
+        cooking_bear.draw();
         bear.draw();
         auto_bears.forEach(function(b) {
             b.draw();
@@ -167,7 +192,11 @@ function Game() {
 }
 
 function when_load_fail_we_start_game() {
+  // remember to add new assets here 
   jaws.assets.add("map.png");
+  jaws.assets.add("cooking.png");
+  jaws.assets.add("badguy.png");
+  jaws.assets.add("base.png");
   jaws.start(Game);  // Our convenience function jaws.start() will load assets, call setup and loop update/draw in 60 FPS
 }
 
