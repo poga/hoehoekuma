@@ -1,4 +1,4 @@
-# hoehoekumamisu
+# hoe-hoe-kuma, hai-hai-miso
 
 ## convert sprite sheet with imagemagick
 
