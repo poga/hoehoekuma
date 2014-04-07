@@ -1,6 +1,6 @@
 $.getJSON("./text.json", function (data) { window.bear_text = data; });
 function uint_random(n) {
-  return Math.floor(Math.random()*n);
+  return ~~(Math.random()*n);
 }
 
 function size_of_dict(t) {
@@ -55,6 +55,15 @@ function draw_text(canvas, x, y, text, fillStyle) {
 var SHEET_NUM = 0;
 var AUTO_BEAR_NUM = 10;
 
+function bear_say(text) {
+  var that = this;
+  if (that.text_n) return;
+  that.text_n = text;
+  setTimeout(function() {
+    that.text_n = null;
+  }, 1000);
+}
+
 function create_bear(type_n, x, y) {
 
     var sheetname = 'sprites/char' + (type_n) + '_sprites.png';
@@ -66,7 +75,8 @@ function create_bear(type_n, x, y) {
     bear.anim_left = anim.slice(12, 16);
     bear.anim_right = anim.slice(4, 8);
     bear.type_n = type_n;
-    bear.text_n = uint_random( size_of_dict(bear_text) ) + 1;
+    bear.text_n = null;
+    bear.say = bear_say;
 
     bear.setImage( bear.anim_down.next());
     
@@ -144,9 +154,14 @@ function Game() {
         bear.draw();
         auto_bears.forEach(function(b) {
             b.draw();
-            //draw_rect(jaws.canvas, b.x-50, b.y-65, 100, 30, "rgb(192,192,192)");
-            draw_dialog(jaws.canvas, b.x-50, b.y-65, 100, 30, "#fff");
-            draw_text(jaws.canvas, b.x-40, b.y-43, window.bear_text[b.text_n], "rgb(0,0,0)");
+            if (b.text_n) {
+              draw_dialog(jaws.canvas, b.x-50, b.y-65, 100, 30, "#fff");
+              draw_text(jaws.canvas, b.x-40, b.y-43, window.bear_text[b.text_n], "rgb(0,0,0)");
+            } else {
+              if (Math.random() < 0.005) {
+                b.say(uint_random( size_of_dict(bear_text) ) + 1);
+              }
+            }
         });
     };
 }
