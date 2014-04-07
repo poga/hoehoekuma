@@ -118,7 +118,7 @@ function Game() {
         
         bear = create_bear(1, jaws.width/2, jaws.height/2);
         for (var i=0; i < AUTO_BEAR_NUM; i++) {
-            auto_bears.push(create_bear(uint_random(SHEET_NUM-1)+2, Math.random()*jaws.width, Math.random()*jaws.height));
+            auto_bears.push(create_bear(uint_random(SHEET_NUM-1)+2, Math.random()*jaws.width, 150+Math.random()*(jaws.height-150)));
         }
         jaws.preventDefaultKeys(["up", "down", "left", "right"]);
     };
@@ -151,7 +151,7 @@ function Game() {
           if( b.x < 0 || b.x > jaws.width ) {
             b.vx *= -1;
           }
-          if( b.y < 0 || b.y > jaws.height ) {
+          if( b.y < 150 || b.y > jaws.height ) {
             b.vy *= -1;
           }
           
