@@ -4,7 +4,7 @@ $.getJSON("./text.json", function (data) { window.bear_text = data; });
 
 var SHEET_NUM = 0;
 var AUTO_BEAR_NUM = 10;
-var SCALE = 2; // scale factor to the image assets
+var SCALE = 1; // scale factor to the image assets
 
 //
 
@@ -87,8 +87,8 @@ function create_bear(type_n, x, y) {
     bear.setImage( bear.anim_down.next());
     
     // vx / vy only used by auto_bears
-    bear.vx = Math.random()*4 - 2;
-    bear.vy = Math.random()*4 - 2;
+    bear.vx = Math.random()*2 - 1;
+    bear.vy = Math.random()*2 - 1;
 
     return bear;
 }
@@ -111,14 +111,14 @@ function Game() {
     var speed = 2;
 
     this.setup = function () {
-        cooking_bear = create_cooking_bear( jaws.width/2, 50 );
-        base = new jaws.Sprite( {x:jaws.width/2, y:100, anchor: "center", image: "base.png"} );
+        cooking_bear = create_cooking_bear( jaws.width/2, 30 );
+        base = new jaws.Sprite( {x:jaws.width/2, y:50, anchor: "center", image: "base.png"} );
         
         map = new jaws.Sprite({ x:jaws.width/2, y:jaws.height/2, anchor: "center", image: "map.png"});
         
         bear = create_bear(1, jaws.width/2, jaws.height/2);
         for (var i=0; i < AUTO_BEAR_NUM; i++) {
-            auto_bears.push(create_bear(uint_random(SHEET_NUM-1)+2, Math.random()*jaws.width, 150+Math.random()*(jaws.height-150)));
+            auto_bears.push(create_bear(uint_random(SHEET_NUM-1)+2, Math.random()*jaws.width, 100+Math.random()*(jaws.height-100)));
         }
         jaws.preventDefaultKeys(["up", "down", "left", "right"]);
     };
@@ -151,7 +151,7 @@ function Game() {
           if( b.x < 0 || b.x > jaws.width ) {
             b.vx *= -1;
           }
-          if( b.y < 150 || b.y > jaws.height ) {
+          if( b.y < 100 || b.y > jaws.height ) {
             b.vy *= -1;
           }
           
