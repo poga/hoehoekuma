@@ -60,7 +60,7 @@ function create_bear(type_n, x, y) {
     var sheetname = 'sprites/char' + (type_n) + '_sprites.png';
 
     var anim = new jaws.Animation({sprite_sheet: sheetname, frame_duration: 200, frame_size: [24, 32]});
-    bear = new jaws.Sprite({x:x, y:y, scale: 3, anchor: "center" });
+    bear = new jaws.Sprite({x:x, y:y, scale: 2, anchor: "center" });
     bear.anim_up = anim.slice(8, 12);
     bear.anim_down = anim.slice(0, 4);
     bear.anim_left = anim.slice(12, 16);
@@ -84,10 +84,10 @@ function Game() {
     var speed = 2;
 
     this.setup = function () {
-        map = new jaws.Sprite({ x:320, y:240, anchor: "center", image: "map.png"});
-        bear = create_bear(1, 320, 240);
+        map = new jaws.Sprite({ x:jaws.width/2, y:jaws.height/2, anchor: "center", image: "map.png"});
+        bear = create_bear(1, jaws.width/2, jaws.height/2);
         for (var i=0; i < AUTO_BEAR_NUM; i++) {
-            auto_bears.push(create_bear(uint_random(SHEET_NUM-1)+2, Math.random()*500+100, Math.random()*300+100));
+            auto_bears.push(create_bear(uint_random(SHEET_NUM-1)+2, Math.random()*jaws.width, Math.random()*jaws.height));
         }
         jaws.preventDefaultKeys(["up", "down", "left", "right"]);
     };
