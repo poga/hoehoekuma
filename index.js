@@ -5,6 +5,7 @@ $.getJSON("./text.json", function (data) { window.bear_text = data; });
 var SHEET_NUM = 0;
 var AUTO_BEAR_NUM = 10;
 var SCALE = 1; // scale factor to the image assets
+var TOP_Y_LIMIT = 125;
 
 // Other Global Game State Variables ---------
 
@@ -105,7 +106,7 @@ function auto_bear_following(bear) {
   
   // hardcoded area detection for "Going into the build brewing miso"
   if( this.x < jaws.width * 0.66 && this.x > jaws.width * 0.33 &&
-      this.y < 95 ) {
+      this.y < TOP_Y_LIMIT - 10 ) {
     miso_bear_num_ += 1;
     var index = auto_bears.indexOf(this);
     if( index > -1 ) {
@@ -121,7 +122,7 @@ function auto_bear_roaming(bear) {
   if( this.x < 0 || this.x > jaws.width ) {
     this.vx *= -1;
   }
-  if( this.y < 100 || this.y > jaws.height ) {
+  if( this.y < TOP_Y_LIMIT || this.y > jaws.height ) {
     this.vy *= -1;
   }
   
@@ -193,20 +194,20 @@ function Game() {
     var speed = 2;
     
     this.setup = function () {
-        cooking_bear = create_cooking_bear( jaws.width/2, 50 );
+        cooking_bear = create_cooking_bear( jaws.width/2, 70 );
         
-        map = new jaws.Sprite({ x:jaws.width/2, y:jaws.height/2, anchor: "center", image: "background.png"});
+        map = new jaws.Sprite({ x:jaws.width/2, y:jaws.height/2 + 25, anchor: "center", image: "background.png"});
         
         bear = create_bear(1, jaws.width/2, jaws.height/2);
         for (var i=0; i < AUTO_BEAR_NUM; i++) {
-            auto_bears.push(create_bear(uint_random(SHEET_NUM-1)+2, Math.random()*jaws.width, 100+Math.random()*(jaws.height-100)));
+            auto_bears.push(create_bear(uint_random(SHEET_NUM-1)+2, Math.random()*jaws.width, TOP_Y_LIMIT + Math.random()*(jaws.height-TOP_Y_LIMIT)));
         }
         jaws.preventDefaultKeys(["up", "down", "left", "right"]);
     };
 
     this.update = function () {
         if( auto_bears.length < AUTO_BEAR_NUM ) {
-            auto_bears.push(create_bear(uint_random(SHEET_NUM-1)+2, Math.random()*jaws.width, 100+Math.random()*(jaws.height-100)));
+            auto_bears.push(create_bear(uint_random(SHEET_NUM-1)+2, Math.random()*jaws.width, TOP_Y_LIMIT+Math.random()*(jaws.height-TOP_Y_LIMIT)));
         }
     
         cooking_bear.setImage( cooking_bear.anim.next() );
@@ -249,6 +250,7 @@ function Game() {
               }
             }
         });
+        draw_text(jaws.canvas, 10, 20, "正有 " + miso_bear_num_ + " 隻熊在煮味噌", "rgb(0,0,0)");
     };
 }
 
