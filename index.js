@@ -6,6 +6,11 @@ var SHEET_NUM = 0;
 var AUTO_BEAR_NUM = 10;
 var SCALE = 1; // scale factor to the image assets
 
+// Other Global Game State Variables ---------
+
+var miso_bear_num_ = 3; // initial num
+var auto_bears = [];   
+
 // --------------- Math and Helpers ----------
 
 function len_sq(obj1, obj2) {
@@ -97,6 +102,17 @@ function auto_bear_following(bear) {
   if(jaws.pressed("down")){
       this.setImage( this.anim_down.next() );
   }
+  
+  // hardcoded area detection for "Going into the build brewing miso"
+  if( this.x < jaws.width * 0.66 && this.x > jaws.width * 0.33 &&
+      this.y < 95 ) {
+    miso_bear_num_ += 1;
+    var index = auto_bears.indexOf(this);
+    if( index > -1 ) {
+      auto_bears.splice(index, 1); 
+    }
+    delete this;
+  }
 }
 
 function auto_bear_roaming(bear) {
@@ -173,10 +189,9 @@ function create_cooking_bear(x, y) {
 function Game() {
     var bear;
     var map;
-    var auto_bears = [];
     var cooking_bear;
     var speed = 2;
-
+    
     this.setup = function () {
         cooking_bear = create_cooking_bear( jaws.width/2, 50 );
         
@@ -190,6 +205,10 @@ function Game() {
     };
 
     this.update = function () {
+        if( auto_bears.length < AUTO_BEAR_NUM ) {
+            auto_bears.push(create_bear(uint_random(SHEET_NUM-1)+2, Math.random()*jaws.width, 100+Math.random()*(jaws.height-100)));
+        }
+    
         cooking_bear.setImage( cooking_bear.anim.next() );
     
         bear.setImage( bear.anim_down.next());
