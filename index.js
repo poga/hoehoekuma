@@ -173,14 +173,12 @@ function create_cooking_bear(x, y) {
 function Game() {
     var bear;
     var map;
-    var base; 
     var auto_bears = [];
     var cooking_bear;
     var speed = 2;
 
     this.setup = function () {
-        cooking_bear = create_cooking_bear( jaws.width/2, 30 );
-        base = new jaws.Sprite( {x:jaws.width/2, y:50, anchor: "center", image: "base.png"} );
+        cooking_bear = create_cooking_bear( jaws.width/2, 50 );
         
         map = new jaws.Sprite({ x:jaws.width/2, y:jaws.height/2, anchor: "center", image: "background.png"});
         
@@ -219,7 +217,6 @@ function Game() {
     this.draw = function () {
         jaws.clear();
         map.draw();
-        base.draw();
         cooking_bear.draw();
         bear.draw();
         auto_bears.forEach(function(b) {
