@@ -182,7 +182,7 @@ function Game() {
         cooking_bear = create_cooking_bear( jaws.width/2, 30 );
         base = new jaws.Sprite( {x:jaws.width/2, y:50, anchor: "center", image: "base.png"} );
         
-        map = new jaws.Sprite({ x:jaws.width/2, y:jaws.height/2, anchor: "center", image: "map.png"});
+        map = new jaws.Sprite({ x:jaws.width/2, y:jaws.height/2, anchor: "center", image: "background.png"});
         
         bear = create_bear(1, jaws.width/2, jaws.height/2);
         for (var i=0; i < AUTO_BEAR_NUM; i++) {
@@ -240,7 +240,7 @@ function Game() {
 
 function when_load_fail_we_start_game() {
   // remember to add new assets here 
-  jaws.assets.add("map.png");
+  jaws.assets.add("background.png");
   jaws.assets.add("cooking.png");
   jaws.assets.add("badguy.png");
   jaws.assets.add("base.png");
