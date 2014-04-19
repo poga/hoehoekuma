@@ -140,12 +140,8 @@ function auto_bear_roaming(bear) {
   else {
     this.setImage(this.anim_left.next()); 
   }
-  
-  // This is just a hack here. in the actual game, auto_bears should only follow hero bear
-  // when he is "shouted to death" so he follows the hero.
-  // But for the demonstration of following quickly, let's just check proximity and 
-  // changes auto_bear's behaviour
-  if( len_sq(this, bear) < 400 ) {
+    
+  if( bear.shoutarea.rect().collideRect(this.rect()) ) {
     this.movement = auto_bear_following;
   }
 }
@@ -198,11 +194,27 @@ function Game() {
         
         map = new jaws.Sprite({ x:jaws.width/2, y:jaws.height/2 + 25, anchor: "center", image: "background.png"});
         
+        // Hero
         bear = create_bear(1, jaws.width/2, jaws.height/2);
+        bear.shoutarea = new jaws.Sprite({ x:bear.x, y:bear.y, anchor: "center", image: "redrect.png"});
+        bear.shoutarea.scaleTo(0.01);
+        
+        // Auto Bears
         for (var i=0; i < AUTO_BEAR_NUM; i++) {
             auto_bears.push(create_bear(uint_random(SHEET_NUM-1)+2, Math.random()*jaws.width, TOP_Y_LIMIT + Math.random()*(jaws.height-TOP_Y_LIMIT)));
         }
         jaws.preventDefaultKeys(["up", "down", "left", "right"]);
+        
+        // Hero Bear shout control
+        jaws.on_keydown("space", function() {
+          if( bear.shoutarea.grow === true ) return;
+          bear.shoutarea.grow = true;
+          setTimeout(function() {
+            bear.shoutarea.scale = 0;
+            bear.shoutarea.scaleTo(0);
+            bear.shoutarea.grow = false;
+          }, 1000);
+        });
     };
 
     this.update = function () {
@@ -213,27 +225,36 @@ function Game() {
         cooking_bear.setImage( cooking_bear.anim.next() );
     
         bear.setImage( bear.anim_down.next());
-        if(jaws.pressed("left")) {
+        bear.shoutarea.x = bear.x;
+        bear.shoutarea.y = bear.y;
+        
+        if( bear.shoutarea.grow === true ) {
+          bear.shoutarea.scale += 0.08;
+          bear.shoutarea.scaleTo( bear.shoutarea.scale );
+        } else {
+          if(jaws.pressed("left")) {
             bear.x -= speed;
             bear.setImage( bear.anim_left.next());
-        }
-        if(jaws.pressed("right")){
+          }
+          if(jaws.pressed("right")){
             bear.x += speed;
             bear.setImage( bear.anim_right.next());
-        }
-        if(jaws.pressed("up")){
+          }
+          if(jaws.pressed("up")){
             bear.y -= speed;
             bear.setImage( bear.anim_up.next());
-        }
-        if(jaws.pressed("down")){
+          }
+          if(jaws.pressed("down")){
             bear.y += speed;
             bear.setImage( bear.anim_down.next());
+          }
         }
         
         auto_bears.forEach(function(b) {
           b.movement(bear);
         });
     };
+
     this.draw = function () {
         jaws.clear();
         map.draw();
@@ -251,6 +272,7 @@ function Game() {
             }
         });
         draw_text(jaws.canvas, 10, 20, "正有 " + miso_bear_num_ + " 隻熊在煮味噌", "rgb(0,0,0)");
+        bear.shoutarea.draw();
     };
 }
 
@@ -262,6 +284,7 @@ function when_load_fail_we_start_game() {
   jaws.assets.add("cooking.png");
   jaws.assets.add("badguy.png");
   jaws.assets.add("base.png");
+  jaws.assets.add("redrect.png");
   jaws.start(Game);  // Our convenience function jaws.start() will load assets, call setup and loop update/draw in 60 FPS
 }
 
